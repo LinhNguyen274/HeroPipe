@@ -16,6 +16,9 @@ window.boot = function () {
             //     progressBar.style.width = percent.toFixed(2) + '%';
             // }
             // progressBar(percent)
+            if (window.progressBar) {
+                progressBar(percent)
+            }
             window.getLoadingPerc = function () {
                 return percent
             }
