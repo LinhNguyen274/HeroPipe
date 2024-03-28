@@ -32,6 +32,31 @@ window.boot = function () {
 
     }
 
+    var preloadInMain = function (scene) {
+        Loading.preloadDataUser(null, () => {
+            successProcess(scene);
+        });
+    }
+
+    var successProcess = function (scene) {
+        cc.director.runSceneImmediate(scene);
+        if (cc.sys.isBrowser) {
+            // show canvas
+            var canvas = document.getElementById('GameCanvas');
+            canvas.style.visibility = '';
+            var div = document.getElementById('GameDiv');
+            if (div) {
+                div.style.backgroundImage = '';
+            }
+            console.log('Success to load scene: ' + scene);
+            window.firstTime = true;
+            refreshStickyBannerAd();
+            StickyBannerInstance = window?.GlanceGamingAdInterface?.showStickyBannerAd(StickyObj, bannerCallbacks);
+            replayInstance = window.GlanceGamingAdInterface.loadRewardedAd(replayObj, rewardedCallbacks);
+            rewardInstance = window.GlanceGamingAdInterface.loadRewardedAd(rewardObj, rewardedCallbacks);
+        }
+    }
+
     var onStart = function () {
 
         cc.view.enableRetina(true);
@@ -75,22 +100,7 @@ window.boot = function () {
         bundle.loadScene(launchScene, null, onProgress,
             function (err, scene) {
                 if (!err) {
-                    cc.director.runSceneImmediate(scene);
-                    if (cc.sys.isBrowser) {
-                        // show canvas
-                        var canvas = document.getElementById('GameCanvas');
-                        canvas.style.visibility = '';
-                        var div = document.getElementById('GameDiv');
-                        if (div) {
-                            div.style.backgroundImage = '';
-                        }
-                        console.log('Success to load scene: ' + launchScene);
-                        cc.sys.localStorage.setItem("firstTime", JSON.stringify(true));
-                        refreshStickyBannerAd();
-                        StickyBannerInstance = window?.GlanceGamingAdInterface?.showStickyBannerAd(StickyObj, bannerCallbacks);
-                        replayInstance = window.GlanceGamingAdInterface.loadRewardedAd(replayObj, rewardedCallbacks);
-                        rewardInstance = window.GlanceGamingAdInterface.loadRewardedAd(rewardObj, rewardedCallbacks);
-                    }
+                    preloadInMain(scene);
                 }
             }
         );
